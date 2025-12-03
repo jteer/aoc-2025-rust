@@ -84,8 +84,8 @@ pub fn part_two(input: &str) -> Option<u64> {
     //     .into()
     let mut total = 0;
     for range_str in input.lines().next()?.split(',') {
-        let (L, R) = parse_range(range_str)?;
-        let max_digits = R.ilog10() + 1;
+        let (l, r) = parse_range(range_str)?;
+        let max_digits = r.ilog10() + 1;
         let mut seen = HashSet::new();
 
         // For all possible block lengths d
@@ -94,8 +94,8 @@ pub fn part_two(input: &str) -> Option<u64> {
             let denominator = pow10_d - 1;
 
             // For all repetition counts r >= 2
-            for r in 2.. {
-                let total_digits = d * r;
+            for rep in 2.. {
+                let total_digits = d * rep;
                 if total_digits > max_digits {
                     break;
                 }
@@ -109,17 +109,17 @@ pub fn part_two(input: &str) -> Option<u64> {
                 let min_m = ten_pow(d - 1);
 
                 // if smallest candidate > R
-                if min_m * multiplier > R {
+                if min_m * multiplier > r {
                     break;
                 }
 
                 // Try all m with exactly d digits
                 for m in min_m..ten_pow(d) {
                     let candidate = m * multiplier;
-                    if candidate > R {
+                    if candidate > r {
                         break;
                     }
-                    if candidate >= L && seen.insert(candidate) {
+                    if candidate >= l && seen.insert(candidate) {
                         total += candidate;
                     }
                 }
