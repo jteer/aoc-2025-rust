@@ -1,30 +1,7 @@
 advent_of_code::solution!(5);
 
-#[derive(Debug, Clone, Copy)]
-struct Interval {
-    start: i64,
-    end: i64,
-}
-
-fn merge_intervals(mut ranges: Vec<Interval>) -> Vec<Interval> {
-    ranges.sort_by_key(|i| i.start);
-
-    let mut merged: Vec<Interval> = Vec::new();
-    for r in ranges {
-        match merged.last_mut() {
-            Some(last) if r.start <= last.end => {
-                last.end = last.end.max(r.end);
-            }
-            _ => merged.push(r),
-        }
-    }
-
-    merged
-}
-
 pub fn part_one(input: &str) -> Option<usize> {
     let mut blocks = input.split("\n\n").filter(|s| !s.is_empty());
-
     let ranges: Vec<Interval> = blocks
         .next()?
         .lines()
@@ -48,20 +25,6 @@ pub fn part_one(input: &str) -> Option<usize> {
     Some(queries.iter().filter(|&&q| contains(&merged, q)).count())
 }
 
-fn contains(intervals: &[Interval], q: i64) -> bool {
-    intervals
-        .binary_search_by(|int| {
-            if q < int.start {
-                std::cmp::Ordering::Greater
-            } else if q > int.end {
-                std::cmp::Ordering::Less
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        })
-        .is_ok()
-}
-
 pub fn part_two(input: &str) -> Option<i64> {
     let mut blocks = input.split("\n\n").filter(|s| !s.is_empty());
     let ranges: Vec<Interval> = blocks
@@ -79,6 +42,42 @@ pub fn part_two(input: &str) -> Option<i64> {
     let merged = merge_intervals(ranges);
 
     Some(merged.iter().map(|i| (i.end - i.start + 1)).sum::<i64>())
+}
+
+#[derive(Debug, Clone, Copy)]
+struct Interval {
+    start: i64,
+    end: i64,
+}
+
+fn merge_intervals(mut ranges: Vec<Interval>) -> Vec<Interval> {
+    ranges.sort_by_key(|i| i.start);
+
+    let mut merged: Vec<Interval> = Vec::new();
+    for r in ranges {
+        match merged.last_mut() {
+            Some(last) if r.start <= last.end => {
+                last.end = last.end.max(r.end);
+            }
+            _ => merged.push(r),
+        }
+    }
+
+    merged
+}
+
+fn contains(intervals: &[Interval], q: i64) -> bool {
+    intervals
+        .binary_search_by(|int| {
+            if q < int.start {
+                std::cmp::Ordering::Greater
+            } else if q > int.end {
+                std::cmp::Ordering::Less
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        })
+        .is_ok()
 }
 
 #[cfg(test)]
